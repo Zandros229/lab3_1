@@ -46,7 +46,6 @@ public class BookKeeperTest {
     }
 
 
-
     @Test
     public void invoiceRequestWithZeroPostition() {
         TaxPolicy taxPolicy = mock(TaxPolicy.class);
@@ -57,6 +56,7 @@ public class BookKeeperTest {
 
         Assert.assertThat(invoice.getItems().size(), is(equalTo(0)));
     }
+
     @Test
     public void invoiceRequestWithTwoPostition() {
         Money money1 = new Money(3);
@@ -132,7 +132,7 @@ public class BookKeeperTest {
 
         Money money1 = new Money(3);
         Money money2 = new Money(5);
-        Money money3=new Money(7);
+        Money money3 = new Money(7);
 
         TaxPolicy taxPolicy1 = mock(TaxPolicy.class);
         when(taxPolicy1.calculateTax(ProductType.STANDARD, money1)).thenReturn(new Tax(new Money(0.23), "23%"));
