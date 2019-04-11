@@ -59,18 +59,28 @@ public class BookKeeperTest {
     }
     @Test
     public void invoiceRequestWithTwoPostition() {
-        TaxPolicy taxPolicy = mock(TaxPolicy.class);
-        when(taxPolicy.calculateTax(ProductType.STANDARD, new Money(3))).thenReturn(new Tax(new Money(0.23), "23%"));
+        Money money1 = new Money(3);
+        Money money2 = new Money(5);
 
-        ProductData productData = mock(ProductData.class);
-        when(productData.getType()).thenReturn(ProductType.STANDARD);
+        TaxPolicy taxPolicy1 = mock(TaxPolicy.class);
+        when(taxPolicy1.calculateTax(ProductType.STANDARD, money1)).thenReturn(new Tax(new Money(0.23), "23%"));
+        when(taxPolicy1.calculateTax(ProductType.FOOD, money2)).thenReturn(new Tax(new Money(0.46), "46%"));
 
-        RequestItem requestItem = new RequestItem(productData, 5, new Money(3));
-        invoiceRequest.add(requestItem);
+        ProductData productData1 = mock(ProductData.class);
+        when(productData1.getType()).thenReturn(ProductType.STANDARD);
 
-        Invoice invoice = bookKeeper.issuance(invoiceRequest, taxPolicy);
+        ProductData productData2 = mock(ProductData.class);
+        when(productData2.getType()).thenReturn(ProductType.FOOD);
 
-        Assert.assertThat(invoice.getItems().size(), is(equalTo(1)));
+        RequestItem requestItem1 = new RequestItem(productData1, 5, new Money(3));
+        invoiceRequest.add(requestItem1);
+
+        RequestItem requestItem2 = new RequestItem(productData2, 2, new Money(5));
+        invoiceRequest.add(requestItem2);
+
+        Invoice invoice = bookKeeper.issuance(invoiceRequest, taxPolicy1);
+
+        Assert.assertThat(invoice.getItems().size(), is(equalTo(2)));
     }
 
     @Test
