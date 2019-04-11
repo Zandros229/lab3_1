@@ -14,8 +14,7 @@ import pl.com.bottega.ecommerce.sales.domain.reservation.ReservationRepository;
 import pl.com.bottega.ecommerce.system.application.SystemContext;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class AddProductCommandHandlerTest {
 
@@ -55,7 +54,27 @@ public class AddProductCommandHandlerTest {
     }
 
     @Test
-    public void productAvailable(){
+    public void productAvailableCalledOneTimes(){
+
+        addProductCommandHandler.handle(addProductCommand);
+
+        verify(product,times(1)).isAvailable();
+    }
+
+    @Test
+    public void productAvaibleCalledTwoTimes(){
+
+        addProductCommandHandler.handle(addProductCommand);
+        addProductCommandHandler.handle(addProductCommand);
+
+        verify(product,times(2)).isAvailable();
+
+    }
+
+    @Test
+    public void productAvaible(){
+
         Assert.assertTrue(product.isAvailable());
+
     }
 }
