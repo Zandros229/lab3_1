@@ -47,32 +47,32 @@ public class AddProductCommandHandlerTest {
         systemContext = mock(SystemContext.class);
 
         suggestionService = mock(SuggestionService.class);
-        when(suggestionService.suggestEquivalent(product,client)).thenReturn(product);
+        when(suggestionService.suggestEquivalent(product, client)).thenReturn(product);
 
         addProductCommandHandler = new AddProductCommandHandler(reservationRepository, productRepository, suggestionService,
                 clientRepository, systemContext);
     }
 
     @Test
-    public void productAvailableCalledOneTimes(){
+    public void productAvailableCalledOneTimes() {
 
         addProductCommandHandler.handle(addProductCommand);
 
-        verify(product,times(1)).isAvailable();
+        verify(product, times(1)).isAvailable();
     }
 
     @Test
-    public void productAvaibleCalledTwoTimes(){
+    public void productAvaibleCalledTwoTimes() {
 
         addProductCommandHandler.handle(addProductCommand);
         addProductCommandHandler.handle(addProductCommand);
 
-        verify(product,times(2)).isAvailable();
+        verify(product, times(2)).isAvailable();
 
     }
 
     @Test
-    public void productAvaible(){
+    public void productAvaible() {
 
         Assert.assertTrue(product.isAvailable());
 
