@@ -1,6 +1,9 @@
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
+import pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.ClientData;
 import pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.Id;
 import pl.com.bottega.ecommerce.sales.application.api.command.AddProductCommand;
 import pl.com.bottega.ecommerce.sales.application.api.command.AddProductCommandBuilder;
@@ -11,9 +14,13 @@ import pl.com.bottega.ecommerce.sales.domain.client.ClientRepository;
 import pl.com.bottega.ecommerce.sales.domain.equivalent.SuggestionService;
 import pl.com.bottega.ecommerce.sales.domain.productscatalog.Product;
 import pl.com.bottega.ecommerce.sales.domain.productscatalog.ProductRepository;
+import pl.com.bottega.ecommerce.sales.domain.productscatalog.ProductType;
 import pl.com.bottega.ecommerce.sales.domain.reservation.Reservation;
 import pl.com.bottega.ecommerce.sales.domain.reservation.ReservationRepository;
+import pl.com.bottega.ecommerce.sharedkernel.Money;
 import pl.com.bottega.ecommerce.system.application.SystemContext;
+
+import java.util.Date;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -30,18 +37,23 @@ public class AddProductCommandHandlerTest {
     private Product product;
     private Reservation reservation;
     private Client client;
+    private Reservation.ReservationStatus reservationStatus;
+    private ClientData clientData;
+    private ArgumentCaptor<Reservation> argumentCaptor;
 
     @Before
     public void setup() {
         addProductCommand = new AddProductCommandBuilder().setOrderId(new Id("1")).setProductId(new Id("1")).setQuantity(3).build();
+        reservationStatus=Reservation.ReservationStatus.OPENED;
+        clientData=new ClientData(new Id("1"),"client");
+        reservation = new Reservation(new Id("1"), reservationStatus,clientData, new Date());
 
-        reservation = mock(Reservation.class);
+        product = new Product(new Id("1"),new Money(100),"product", ProductType.STANDARD);
 
-        product = mock(Product.class);
-        when(product.isAvailable()).thenReturn(true);
-
+        argumentCaptor=ArgumentCaptor.forClass(Reservation.class);
         reservationRepository = mock(ReservationRepository.class);
         when(reservationRepository.load(new Id("1"))).thenReturn(reservation);
+
 
         productRepository = mock(ProductRepository.class);
         when(productRepository.load(any())).thenReturn(product);
@@ -54,28 +66,41 @@ public class AddProductCommandHandlerTest {
         addProductCommandHandler = new AddProductCommandHandlerBuilder().setReservationRepository(reservationRepository).setProductRepository(productRepository).setSuggestionService(suggestionService).setClientRepository(clientRepository).setSystemContext(systemContext).build();
     }
 
-    @Test
-    public void productAvailableCalledOneTimes() {
-
-        addProductCommandHandler.handle(addProductCommand);
-
-        verify(product, times(1)).isAvailable();
-    }
 
     @Test
-    public void productAvaibleCalledTwoTimes() {
+    public void reservationRepositoryCalledTwoTimesTest() {
 
         addProductCommandHandler.handle(addProductCommand);
         addProductCommandHandler.handle(addProductCommand);
 
-        verify(product, times(2)).isAvailable();
+        verify(reservationRepository, Mockito.times(2)).load(new Id("1"));
 
     }
 
     @Test
-    public void productAvaible() {
+    public void productRepositoryCalledTwoTimesTest() {
+
+        addProductCommandHandler.handle(addProductCommand);
+        addProductCommandHandler.handle(addProductCommand);
+
+        verify(productRepository, Mockito.times(2)).load(new Id("1"));
+
+    }
+
+
+    @Test
+    public void productAvailableTest() {
 
         Assert.assertTrue(product.isAvailable());
 
+    }
+
+    @Test
+    public void resrevationRepositoryGiveReservationTest(){
+        addProductCommandHandler.handle(addProductCommand);
+
+        verify(reservationRepository).save(argumentCaptor.capture());
+
+        Assert.assertEquals(reservation,argumentCaptor.getValue());
     }
 }
