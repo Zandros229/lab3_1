@@ -3,7 +3,9 @@ import org.junit.Before;
 import org.junit.Test;
 import pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.Id;
 import pl.com.bottega.ecommerce.sales.application.api.command.AddProductCommand;
+import pl.com.bottega.ecommerce.sales.application.api.command.AddProductCommandBuilder;
 import pl.com.bottega.ecommerce.sales.application.api.handler.AddProductCommandHandler;
+import pl.com.bottega.ecommerce.sales.application.api.handler.AddProductCommandHandlerBuilder;
 import pl.com.bottega.ecommerce.sales.domain.client.Client;
 import pl.com.bottega.ecommerce.sales.domain.client.ClientRepository;
 import pl.com.bottega.ecommerce.sales.domain.equivalent.SuggestionService;
@@ -31,7 +33,7 @@ public class AddProductCommandHandlerTest {
 
     @Before
     public void setup() {
-        addProductCommand = new AddProductCommand(new Id("1"), new Id("1"), 3);
+        addProductCommand = new AddProductCommandBuilder().setOrderId(new Id("1")).setProductId(new Id("1")).setQuantity(3).createAddProductCommand();
 
         reservation = mock(Reservation.class);
 
@@ -49,8 +51,7 @@ public class AddProductCommandHandlerTest {
         suggestionService = mock(SuggestionService.class);
         when(suggestionService.suggestEquivalent(product, client)).thenReturn(product);
 
-        addProductCommandHandler = new AddProductCommandHandler(reservationRepository, productRepository, suggestionService,
-                clientRepository, systemContext);
+        addProductCommandHandler = new AddProductCommandHandlerBuilder().setReservationRepository(reservationRepository).setProductRepository(productRepository).setSuggestionService(suggestionService).setClientRepository(clientRepository).setSystemContext(systemContext).createAddProductCommandHandler();
     }
 
     @Test
