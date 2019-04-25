@@ -33,7 +33,7 @@ public class AddProductCommandHandlerTest {
 
     @Before
     public void setup() {
-        addProductCommand = new AddProductCommandBuilder().setOrderId(new Id("1")).setProductId(new Id("1")).setQuantity(3).createAddProductCommand();
+        addProductCommand = new AddProductCommandBuilder().setOrderId(new Id("1")).setProductId(new Id("1")).setQuantity(3).build();
 
         reservation = mock(Reservation.class);
 
@@ -51,7 +51,7 @@ public class AddProductCommandHandlerTest {
         suggestionService = mock(SuggestionService.class);
         when(suggestionService.suggestEquivalent(product, client)).thenReturn(product);
 
-        addProductCommandHandler = new AddProductCommandHandlerBuilder().setReservationRepository(reservationRepository).setProductRepository(productRepository).setSuggestionService(suggestionService).setClientRepository(clientRepository).setSystemContext(systemContext).createAddProductCommandHandler();
+        addProductCommandHandler = new AddProductCommandHandlerBuilder().setReservationRepository(reservationRepository).setProductRepository(productRepository).setSuggestionService(suggestionService).setClientRepository(clientRepository).setSystemContext(systemContext).build();
     }
 
     @Test

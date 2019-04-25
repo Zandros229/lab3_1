@@ -22,7 +22,7 @@ public class AddProductCommandBuilder {
         return this;
     }
 
-    public AddProductCommand createAddProductCommand() {
+    public AddProductCommand build() {
         return new AddProductCommand(orderId, productId, quantity);
     }
 }
